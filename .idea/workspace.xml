@@ -2,25 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="710eb14b-8e50-49b2-90f9-2a98c52ce3aa" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Do_An_Nganh.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/AppMobile/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/AppMobile/admin.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/AppMobile/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/AppMobile/migrations/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/AppMobile/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/AppMobile/tests.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/AppMobile/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/AppMobile/views.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/WebMobile/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/WebMobile/asgi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/WebMobile/settings.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/WebMobile/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/WebMobile/wsgi.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebMobile/manage.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebMobile/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,10 +34,11 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Project.color": "432a02",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/Users/Administrator/OneDrive/Máy tính/Do_An_Nganh"
+    "last_opened_file_path": "C:/Users/dattran/Downloads/Do_An_Nganh"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
