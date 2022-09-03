@@ -47,13 +47,26 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'debug_toolbar',
+    'oauth2_provider'
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination', 'PAGE_SIZE': 9
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication'
+    ]
 }
 
+OAUTH2_INFO = {
+    'CLIENT_ID': 'ThxwTIUslligGQSEcwKCPITAMG2wOBOaCkpjQDQb',
+    'CLIENT_SECRET': 'rLYXWz41VxSGmdZRztA88K6ois816Y8IYbodcSOzWjMvlxCWMCoBazjI38y1kXr8EZ3FhiHKbEmVyjJPAnTKvYRj6XIPpTEwMF4gjHoBMtEqUOOeIvXQf8B7wHiwCltm'
+}
+
+# OAUTH2_PROVIDER = {
+#     'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
+# }
+
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -61,13 +74,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 INTERNAL_IPS = [
     '127.0.0.1'
 ]
-
 
 ROOT_URLCONF = 'WebMobile.urls'
 

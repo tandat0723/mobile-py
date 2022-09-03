@@ -9,6 +9,16 @@ class User(AbstractUser):
 
 class Category(models.Model):
     name = models.CharField(null=True, max_length=50, unique=True)
+    image = models.ImageField(blank=True, upload_to='categories/%Y/%m')
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Banner(models.Model):
+    name = models.CharField(max_length=20)
+    image = models.ImageField(blank=True, upload_to='banners/%Y/%m')
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -30,28 +40,38 @@ class Os(models.Model):
 
 
 class CategoryProduct(models.Model):
-    name = models.CharField(null=True, max_length=50)
-    category = models.ForeignKey(Category, null=True, on_delete=models.CASCADE)
+    name = models.CharField(null=True, max_length=50, unique=True)
+    category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
     active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = ('name', 'category')
+
 
 class Product(models.Model):
     name = models.CharField(null=False, max_length=255)
-    category = models.ForeignKey(Category, null=True, on_delete=models.CASCADE)
-    manufacturer = models.ForeignKey(Manufacturer, null=True, on_delete=models.CASCADE)
-    category_products = models.ForeignKey(CategoryProduct, null=True, on_delete=models.CASCADE)
-    os = models.ForeignKey(Os, null=True, on_delete=models.CASCADE)
-    price = models.CharField(max_length=14)
+    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
+    category_product = models.ForeignKey(CategoryProduct, related_name='products', on_delete=models.CASCADE)
+    os = models.ForeignKey(Os, on_delete=models.CASCADE)
+    price = models.CharField(max_length=40)
     quantity = models.CharField(max_length=6)
     active = models.BooleanField(default=True)
     image = models.ImageField(blank=True, upload_to='products/%Y/%m')
     description = RichTextField()
+    tags = models.ManyToManyField('Tag', related_name='products', blank=True)
+
+    def __str__(self):
+        return self.name
 
     class Meta:
-        unique_together = ("name", "category")
+        unique_together = ('name', 'category_product')
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
@@ -152,29 +172,38 @@ class OrderDetail(models.Model):
         return self.order
 
 
-class Comment(models.Model):
-    product = models.ForeignKey(Product, blank=True, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
-    email = models.CharField(max_length=30)
-    content = RichTextField()
+class ActionBase(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('product', 'user')
+        abstract = True
 
 
-class Like(models.Model):
-    product = models.ForeignKey(Product, blank=True, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
-    active = models.BooleanField(default=False)
+class Action(ActionBase):
+    LIKE, UNLIKE = range(2)
+    ACTIONS = [
+        (LIKE, 'like'),
+        (UNLIKE, 'unlike')
+    ]
+    type = models.PositiveSmallIntegerField(choices=ACTIONS, default=LIKE)
 
-    class Meta:
-        unique_together = ('product', 'user')
+
+class Rate(ActionBase):
+    rate = models.PositiveSmallIntegerField(default=0)
 
 
-class Rate(models.Model):
-    rate = models.SmallIntegerField(default=0)
-    product = models.ForeignKey(Product, blank=True, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
+class Comment(ActionBase):
+    content = models.TextField()
 
-    class Meta:
-        unique_together = ('product', 'user')
+    def __str__(self):
+        return self.content
+
+
+class ProductView(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    views = models.IntegerField(default=0)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE)

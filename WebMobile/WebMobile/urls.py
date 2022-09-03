@@ -4,7 +4,6 @@ from rest_framework import permissions
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 import debug_toolbar
-from django.conf import settings
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -32,4 +31,6 @@ urlpatterns = [
             schema_view.with_ui('redoc', cache_timeout=0),
             name='schema-redoc'),
     path('__debug__/', include(debug_toolbar.urls)),
+    path('o/', include('oauth2_provider.urls',
+                       namespace='oauth2_provider'))
 ]
