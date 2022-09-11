@@ -49,12 +49,14 @@ class CategoryProduct(models.Model):
 
     class Meta:
         unique_together = ('name', 'category')
+        ordering = ['name']
 
 
 class Product(models.Model):
     name = models.CharField(null=False, max_length=255)
     manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
     category_product = models.ForeignKey(CategoryProduct, related_name='products', on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     os = models.ForeignKey(Os, on_delete=models.CASCADE)
     price = models.CharField(max_length=40)
     quantity = models.CharField(max_length=6)
@@ -67,7 +69,8 @@ class Product(models.Model):
         return self.name
 
     class Meta:
-        unique_together = ('name', 'category_product')
+        ordering = ['name']
+        unique_together = ('name', 'category')
 
 
 class Tag(models.Model):

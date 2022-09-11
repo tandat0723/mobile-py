@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 from .models import Product, Category, Os, Manufacturer, Order, OrderDetail, CategoryProduct, User, Tag, \
-    Comment, Rate, Action, ProductView
+    Comment, Rate, Action, ProductView, Banner
 
 
 class CategorySerializer(ModelSerializer):
@@ -26,10 +26,20 @@ class CategoryProductSerializer(ModelSerializer):
         fields = '__all__'
 
 
-# class BannerSerializer(ModelSerializer):
-#     class Meta:
-#         model = Banner
-#         fields = '__all__'
+class BannerSerializer(ModelSerializer):
+    image = SerializerMethodField()
+
+    class Meta:
+        model = Banner
+        fields = ['id', 'name', 'image']
+
+    def get_image(self, obj):
+        request = self.context['request']
+
+        if obj.image and not obj.image.name.startswith("/static"):
+            path = '/static/%s' % obj.image.name
+
+            return request.build_absolute_uri(path)
 
 
 class TagSerializer(ModelSerializer):
@@ -43,7 +53,7 @@ class ProductSerializer(ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'category_product', 'image', 'quantity']
+        fields = ['id', 'name', 'price', 'category', 'image', 'quantity']
 
     def get_image(self, obj):
         request = self.context['request']

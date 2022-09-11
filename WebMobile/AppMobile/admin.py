@@ -55,7 +55,7 @@ class BannerAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     form = ProductForm
     list_display = ['name', 'category_product', 'os', 'manufacturer', 'quantity']
-    list_filter = ['name', 'category_product']
+    list_filter = ['category_product']
     search_fields = ['name']
     readonly_fields = ['images']
 
@@ -89,9 +89,9 @@ class StoreAdmin(admin.ModelAdmin):
     search_fields = ['name', 'phone', 'province']
     readonly_fields = ['images']
 
-    def images(self, imgs):
-        if imgs:
-            return mark_safe('<img src="/static/{url}" width="200" />'.format(url=imgs.image.name))
+    def images(self, img):
+        if img:
+            return mark_safe('<img src="/static/{url}" width="200" />'.format(url=img.image.name))
 
 
 class ProvinceAdmin(admin.ModelAdmin):
@@ -118,7 +118,7 @@ class RateAdmin(admin.ModelAdmin):
 
 class ActionAdmin(admin.ModelAdmin):
     list_display = ['type', 'creator', 'product', 'created_date']
-    list_filter = ['creator', 'product']
+    list_filter = ['creator']
     search_fields = ['creator', 'product']
 
 

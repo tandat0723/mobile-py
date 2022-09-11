@@ -4,16 +4,17 @@ from rest_framework import viewsets, permissions, generics, status
 from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.settings import settings
-from .models import Product, Category, CategoryProduct, User, Tag, Action, Rate, Comment, ProductView
-from rest_framework.response import responses, Response
+from .models import Product, Category, CategoryProduct, User, Tag, Action, Rate, Comment, ProductView, Banner
+from rest_framework.response import Response
 from .serializers import ProductSerializer, CategorySerializer, CategoryProductSerializer, UserSerializer, \
-    ProductDetailSerializer, ActionSerializer, RateSerializer, CommentSerializer, ProductViewSerializer
+    ProductDetailSerializer, ActionSerializer, RateSerializer, CommentSerializer, ProductViewSerializer, \
+    BannerSerializer
 from drf_yasg.utils import swagger_auto_schema
 from .paginators import ProductPaginator
 from django.db.models import F
 
 
-class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
+class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = Category.objects.filter(active=True)
     serializer_class = CategorySerializer
 
@@ -25,8 +26,18 @@ class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
             q = q.filter(name__icontains=kw)
         return q
 
+    @action(methods=['get'], detail=True, url_path='products')
+    def get_products(self, request, pk):
+        products = Category.objects.get(pk=pk).products.filter(active=True)
+        kw = request.query_params.get('kw')
+        if kw is not None:
+            products = products.filter(name__icontains=kw)
 
-class CategoryProductViewSet(viewsets.ViewSet, generics.ListAPIView):
+        return Response(data=ProductSerializer(products, many=True, context={'request': request}).data,
+                        status=status.HTTP_200_OK)
+
+
+class CategoryProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = CategoryProduct.objects.filter(active=True)
     serializer_class = CategoryProductSerializer
 
@@ -59,9 +70,10 @@ class CategoryProductViewSet(viewsets.ViewSet, generics.ListAPIView):
                         status=status.HTTP_200_OK)
 
 
-class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
+class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAPIView):
     queryset = Product.objects.filter(active=True)
     serializer_class = ProductDetailSerializer
+    pagination_class = ProductPaginator
 
     def get_permissions(self):
         if self.action in ['add_comment', 'take_action', 'rate']:
@@ -77,6 +89,10 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         category_product = self.request.query_params.get('category_product')
         if category_product is not None:
             queryset = queryset.filter(category_product=category_product)
+
+        category = self.request.query_params.get('category')
+        if category is not None:
+            queryset = queryset.filter(category=category)
 
         return queryset
 
@@ -181,3 +197,7 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateA
             return super().partial_update(request, *args, **kwargs)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
+
+class BannerViewSet(viewsets.ViewSet, generics.ListCreateAPIView):
+    queryset = Banner.objects.filter(active=True)
+    serializer_class = BannerSerializer

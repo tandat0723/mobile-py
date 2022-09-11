@@ -1,0 +1,81 @@
+/*BANNER CAUROUSEL*/
+.carsou {
+    height: 300px;
+}
+
+.d-block {
+    width: 100%;
+    border-radius: 20px;
+}
+
+/*CATEGORY CARD*/
+.col {
+    margin-bottom: 25px;
+    margin-top: 25px;
+}
+
+.card {
+    border-radius: 15px;
+    height: 230px;
+    background-color: #323232;
+}
+
+.item {
+    width: 120px; 
+    overflow: hidden; 
+    display: block; 
+    margin: 34px auto 0px;       
+    position: absolute; 
+    bottom: 65px;
+    right: 38px;
+}
+
+.title_item {
+    text-align: center; 
+    color: #fff; 
+    font-size: 15px; 
+    position: absolute;
+    left: 0px; 
+    right: 0px; 
+    bottom: 20px;
+}
+
+.img_item {
+    width: 100%; 
+    height: auto;
+}
+
+/* LIST PRODUCT */
+
+.product {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.cards {
+    border-radius: 22px;
+    height: 420px;
+    background-color: #323232;
+}
+
+.title_items{
+    position: relative;
+    text-align: center;
+}
+
+.item_names {
+    color: #fff; 
+    font-size: 15px; 
+}
+
+.img_items {
+    width: 100%; 
+    height: auto;
+    padding: 20px;
+}
+
+.item_prices {
+    color: #fff; 
+    font-size: 22px; 
+    font-weight: bold;
+}
