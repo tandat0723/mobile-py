@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { createContext, useReducer } from 'react'
 import Header from './Header'
-import Footer from './Footer'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from '../pages/Home'
 import PhoneProducts from '../pages/PhoneProducts'
@@ -9,12 +8,18 @@ import MacProducts from '../pages/MacProducts'
 import WatchProducts from '../pages/WatchProducts'
 import SoundProducts from '../pages/SoundProducts'
 import AccessoryProducts from '../pages/AccessoryProducts'
-import { Container } from 'react-bootstrap'
+import Login from '../pages/Login'
+import UserReducer from '../reducers/UserReducer'
+
+export const UserContext = createContext()
 
 const Boby = () => {
+    const [user, dispatch] = useReducer(UserReducer)
+
+
     return (
-        <Container>
-            <BrowserRouter>
+        <BrowserRouter>
+            <UserContext.Provider value={[user, dispatch]}> 
                 <Header />
                 <Routes>
                     <Route exact path='/' element={<Home />} />
@@ -24,10 +29,10 @@ const Boby = () => {
                     <Route exact path='/categories/4/products/' element={<WatchProducts />}/>
                     <Route exact path='/categories/5/products/' element={<SoundProducts />}/>
                     <Route exact path='/categories/6/products/' element={<AccessoryProducts />}/>
+                    <Route exact path='/login' element={<Login />} />
                 </Routes>
-                <Footer />
-            </BrowserRouter>
-        </Container>
+            </UserContext.Provider>
+        </BrowserRouter>
     )
 }
 

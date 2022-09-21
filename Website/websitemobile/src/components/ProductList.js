@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, Col } from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import '../static/Components.css'
 
 const ProductList = (props) => {

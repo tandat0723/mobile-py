@@ -178,14 +178,14 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
 
 
 class OauthInfo(APIView):
-    def get(self, request):
+    def get_oauth2(self, request):
         return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK)
 
 
 class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated()]
 
     def destroy(self, request, *args, **kwargs):
         if request.user == self.get_object().creator:

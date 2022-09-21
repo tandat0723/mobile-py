@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Row } from 'react-bootstrap'
-import { useLocation, useParams } from 'react-router'
+import { Carousel, Row } from 'react-bootstrap'
+import { useLocation, } from 'react-router'
 import CategoryCards from '../components/CategoryCards'
 import ProductList from '../components/ProductList'
 import Api, { endpoints } from '../configs/Api'
@@ -10,8 +10,9 @@ const Home = () => {
     const [categories, setCategories] = useState([])
     const [products, setProducts] = useState([])
     const location = useLocation()
-    const [productphones, setProductPhones] = useState([])
-    const { categoryId } = useParams()
+    const [banners, setBanners] = useState([])
+    // const [productphones, setProductPhones] = useState([])
+    // const { categoryId } = useParams()
 
 
     useEffect(() => {
@@ -35,23 +36,25 @@ const Home = () => {
         loadProducts()
     },[location.search])
 
-    useEffect(() => {
-        const loadProductPhones = async() => {
-            try{
-                const res = await Api.get(endpoints['product_phone'])
-                setProductPhones(res.data.results)
-            }
-            catch(err) {
-                console.error(err)
-            }
+    useEffect(() =>{
+        const loadBanners = async() =>{
+            const ress = await Api.get(endpoints['banners'])
+            setBanners(ress.data)
         }
-        loadProductPhones()
+        loadBanners()
     },[])
     
     return (
         <>
+            <Carousel className='carou' fade>
+                {banners.map( b =>  
+                    <Carousel.Item key={b.id}> 
+                        <img className="d-block w-100" src={b.image} alt={b.name} /> 
+                    </Carousel.Item>
+                )}
+            </Carousel>
             <Row>
-                {categories.map(c => <CategoryCards obj={c} />)}
+                {categories.map(c => <CategoryCards key={c.id} obj={c} />)}
             </Row>
             <div className='part'>
                 <BsApple className='logo' />
@@ -59,14 +62,9 @@ const Home = () => {
             </div>
             <Row>
                 {products.map(p => {
-                    return <ProductList name={p.name} image={p.image} price={p.price} />
+                    return <ProductList key={p.id} name={p.name} image={p.image} price={p.price} />
                 })}
             </Row>
-            {/* <Row>
-                {productphones.map(d => {
-                    return <ProductList name={d.name} image={d.image} price={d.price} />
-                })}
-            </Row> */}
         </>
     )
 }
