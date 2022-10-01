@@ -34,7 +34,7 @@ const PadProducts = () => {
             </Carousel>
             <Row>
                 {products.map(a => {
-                    return <ProductList key={a.id} name={a.name} image={a.image} price={a.price} />
+                    return <ProductList key={a.id} id={a.id} name={a.name} image={a.image} isProduct={true} price={a.price} />
                 })}
             </Row>
         </>

@@ -11,8 +11,6 @@ const Home = () => {
     const [products, setProducts] = useState([])
     const location = useLocation()
     const [banners, setBanners] = useState([])
-    // const [productphones, setProductPhones] = useState([])
-    // const { categoryId } = useParams()
 
 
     useEffect(() => {
@@ -62,7 +60,7 @@ const Home = () => {
             </div>
             <Row>
                 {products.map(p => {
-                    return <ProductList key={p.id} name={p.name} image={p.image} price={p.price} />
+                    return <ProductList key={p.id} id={p.id} name={p.name} image={p.image} price={p.price} isProduct={true} />
                 })}
             </Row>
         </>

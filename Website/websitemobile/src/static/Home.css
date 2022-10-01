@@ -32,3 +32,14 @@
     padding: 6px;
     margin-left: 30px;
 }
+
+.fa {
+    display: flex;
+}
+
+.left {
+    min-width: 50%;
+}
+.right {
+    min-width: 50%;
+}

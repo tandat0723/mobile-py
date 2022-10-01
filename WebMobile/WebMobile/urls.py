@@ -13,8 +13,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="1951052039dat@ou.edu.vn"),
         license=openapi.License(name="Tan Dat @2022"),
     ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
+    public=True, permission_classes=(permissions.AllowAny,)
 )
 
 urlpatterns = [

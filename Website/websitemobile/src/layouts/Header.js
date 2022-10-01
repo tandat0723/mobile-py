@@ -38,7 +38,6 @@ const Header = () => {
             <Link className='nav-link' to='/'>{user.username}</Link>
             <a href='/' onClick={logout} className='nav-link'>Đăng xuất</a>
         </>
-            
     
 
     return (

@@ -34,7 +34,7 @@ const AccessoryProducts = () => {
             </Carousel> 
             <Row>
                 {products.map(p => {
-                    return <ProductList name={p.name} image={p.image} price={p.price} />
+                    return <ProductList id={p.id} name={p.name} image={p.image} price={p.price} isProduct={true} />
                 })}
             </Row>
         </>

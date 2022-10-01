@@ -1,21 +1,21 @@
 import React from 'react'
 import { Card, Col } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import '../static/Components.css'
 
 const ProductList = (props) => {
-    // const nav = useNavigate()
-    // const goProduct = () => {
-    //     if(props.isProduct === true)
-    //         nav(`/products/${props.id}`)
-    //     else
-    //         nav(`/categoryproducts/${props.id}/products`)
+    const nav = useNavigate()
+    const goProduct = () => {
+        if(props.isProduct === true)
+            nav(`/products/${props.id}/`)
+        else
+            nav(`/categoryproducts/${props.id}/products`)
 
-    // }
+    }
 
     return (
         <Col className='product' md={3} xs={12}>
-            <Link to='/' style={{textDecoration:"none"}}>
+            <Link to={`/products/${props.id}/`} onClick={goProduct} style={{textDecoration:"none"}}>
                 <Card className='cards'>
                     <Card.Img className='img_items' variant="top" src={props.image}/>
                     <Card.Body className='title_items'>

@@ -4,6 +4,7 @@ import { Button, Form } from 'react-bootstrap'
 import { Navigate } from 'react-router-dom'
 import Api, { endpoints, oauthApis } from '../configs/Api'
 import { UserContext } from '../layouts/Boby'
+import '../static/Home.css'
 
 
 const Login = () => {
@@ -46,7 +47,7 @@ const Login = () => {
   
     return (
         <>
-            <Form className='form' onSubmit={login}>
+            <Form className='form' style={{width:"35%", position:"relative", margin:"30px", left:"350px"}} onSubmit={login}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Username</Form.Label>
                     <Form.Control type="text" placeholder="Username" onChange={(event) => setUsername(event.target.value)} value={username} />
