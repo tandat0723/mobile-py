@@ -28,7 +28,7 @@ const ProductDetail = () => {
                     </Card>
                 </div>
                 <div className='right'>
-                    {/* {productDetail.map(p => <div>{p.name}</div>)} */}
+                    {/* { {productDetail.map(p => <div>{p.name}</div>)} } */}
                 </div>
             </div>
         </>

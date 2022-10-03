@@ -73,7 +73,7 @@ class CategoryProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Re
 class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAPIView):
     queryset = Product.objects.filter(active=True)
     serializer_class = ProductDetailSerializer
-    pagination_class = ProductPaginator
+    # pagination_class = ProductPaginator
 
     def get_permissions(self):
         if self.action in ['add_comment', 'take_action', 'rate']:
