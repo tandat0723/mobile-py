@@ -15,7 +15,7 @@ const ProductDetail = () => {
             console.info(res.data)
         }
         loadProductDetail()
-    },[])
+    },[productId])
 
     return (
         <>
