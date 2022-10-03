@@ -7,15 +7,15 @@ const ProductList = (props) => {
     const nav = useNavigate()
     const goProduct = () => {
         if(props.isProduct === true)
-            nav(`/products/${props.id}/`)
+            nav(`/products/${props.id}`)
         else
-            nav(`/categoryproducts/${props.id}/products`)
+            nav(`/categories/${props.id}/products`)
 
     }
 
     return (
         <Col className='product' md={3} xs={12}>
-            <Link to={`/products/${props.id}/`} onClick={goProduct} style={{textDecoration:"none"}}>
+            <Link to={goProduct} style={{textDecoration:"none"}}>
                 <Card className='cards'>
                     <Card.Img className='img_items' variant="top" src={props.image}/>
                     <Card.Body className='title_items'>

@@ -1,25 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Carousel, Row } from 'react-bootstrap'
 import { useLocation, } from 'react-router'
-import CategoryCards from '../components/CategoryCards'
 import ProductList from '../components/ProductList'
 import Api, { endpoints } from '../configs/Api'
 import { BsApple } from 'react-icons/bs'
+import '../static/Home.css'
 
 const Home = () => {
-    const [categories, setCategories] = useState([])
     const [products, setProducts] = useState([])
     const location = useLocation()
     const [banners, setBanners] = useState([])
-
-
-    useEffect(() => {
-        const loadCategories = async() => {
-            const res = await Api.get(endpoints['categories'])
-            setCategories(res.data)
-        }
-        loadCategories()
-    },[])
 
     useEffect(() => {
         const loadProducts = async() => {
@@ -41,6 +31,7 @@ const Home = () => {
         }
         loadBanners()
     },[])
+
     
     return (
         <>
@@ -51,9 +42,6 @@ const Home = () => {
                     </Carousel.Item>
                 )}
             </Carousel>
-            <Row>
-                {categories.map(c => <CategoryCards key={c.id} obj={c} />)}
-            </Row>
             <div className='part'>
                 <BsApple className='logo' />
                 {/* <div className='title'>iPhone</div> */}

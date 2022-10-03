@@ -62,17 +62,23 @@
 .title_items{
     position: relative;
     text-align: center;
+    padding: 3px;
+    
 }
 
 .item_names {
     color: #fff; 
     font-size: 15px; 
+    padding-top: 10px;
 }
 
 .img_items {
     width: 100%; 
     height: auto;
-    padding: 20px;
+    padding-top: 35px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 13px;
 }
 
 .item_prices {
