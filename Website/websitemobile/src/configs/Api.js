@@ -7,7 +7,7 @@ export let endpoints = {
     'categoryproducts':'/categoryproducts/',
     'products':'/products/',
     'productcategories':(category) => `/categories/${category}/products/`,
-    'product-detail': (productId) => `/products/${productId}/`,
+    'productdetail': (product) => `/products/${product}/`,
     'login':'/o/token/',
     'current-user':'/users/current-user/',
     'oauth2-info':'/oauth2-info/',

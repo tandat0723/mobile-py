@@ -18,8 +18,8 @@ const Login = () => {
         try{
             // const info = await Api.post(endpoints['oauth2-info'])
             const res = await Api.post(endpoints['login'], {
-                'client_id': 'j9HoxIMT8aCoWEk53fex2Wbev3506vv4bC34YvEF',
-                'client_secret': 'Dn31cKYB2oNNgQgM6n8DzqO4fRu6S952IUSNxalVIpsX9BLMSPpOCz8J6kSDLMhZLy5yk4dgE5KzreXQDNVpQ7spiSvtEvYC6v4R5GkxykadumhcWgjBQ0NJYPnFpH08',
+                'client_id': '8wphzzFE8yHX5n56gN6wF8vMrlgr7FFbOiGXGtap',
+                'client_secret': 'pbkdf2_sha256$390000$UW4CogGFo45mkt0h6qWrTi$jxhjnsyabaEj6xnz0PcyGHFMYlCteLm0y+bprTvKKak=',
                 'username': username,
                 'password': password,
                 'grant_type': 'password'

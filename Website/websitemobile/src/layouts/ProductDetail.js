@@ -1,35 +1,44 @@
 import React, { useEffect, useState } from 'react'
-import { Card } from 'react-bootstrap'
-import { useParams } from 'react-router-dom'
+import { Col, Image, Row, Spinner } from 'react-bootstrap'
+import { useParams } from 'react-router'
 import Api, { endpoints } from '../configs/Api'
 import '../static/Home.css'
 
 const ProductDetail = () => {
     const [productDetail, setProductDetail] = useState([])
-    const productId = useParams()
+    const product = useParams()
+
+    
 
     useEffect (() => {
-        const loadProductDetail = async() => {
-            const res = await Api.get(endpoints['product-detail'](productId))
+        let loadProductDetail = async() => {
+            let res = await Api.get(endpoints['productdetail'](product))
             setProductDetail(res.data)
-            console.info(res.data)
         }
         loadProductDetail()
-    },[productId])
+    },[product])
+
+    
+    if (productDetail === null)
+        return <Spinner animation="border" />
 
     return (
         <>
-            <div className='fa'>
-                <div className='left'>
-                    <Card>
-                        <div>
-                            <Card.Img variant="top"src={productDetail.image} />
-                        </div>
-                    </Card>
-                </div>
-                <div className='right'>
-                    {/* { {productDetail.map(p => <div>{p.name}</div>)} } */}
-                </div>
+            <h1>Chi tiết sản phẩm</h1>
+            <Row>
+                <Col md={4} xs={12}>
+                    <Image id={productDetail.id} src={productDetail.image} rounded fluid />
+                </Col>
+                <Col md={12} xs={12}>
+                    {/* <p>
+                        {productDetail.tags.map(t => <Badge bg="secondary">{t.name}</Badge>)}
+                    </p> */}
+                    <h3 id={productDetail.id}>{productDetail.name}</h3>
+                    <h4 id={productDetail.id}>{productDetail.price}</h4>
+                </Col>
+            </Row>
+            <div>
+                {productDetail.description}
             </div>
         </>
     )

@@ -10,6 +10,7 @@
     "bootstrap": "^5.2.0",
     "firebase": "^9.10.0",
     "jquery": "^3.6.1",
+    "mdb-react-ui-kit": "^4.2.0",
     "owl.carousel": "^2.3.4",
     "query-string": "^7.1.1",
     "react": "^18.2.0",

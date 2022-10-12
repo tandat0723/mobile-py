@@ -82,9 +82,9 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
 
     def get_queryset(self):
         queryset = self.queryset
-        kw = self.request.query_params.get('kw')
-        if kw is not None:
-            queryset = queryset.filter(name__icontains=kw)
+        product = self.request.query_params.get('kw')
+        if product is not None:
+            queryset = queryset.filter(name__icontains=product)
 
         category_product = self.request.query_params.get('category_product')
         if category_product is not None:

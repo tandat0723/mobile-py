@@ -6,6 +6,7 @@ import Login from '../pages/Login'
 import UserReducer from '../reducers/UserReducer'
 import ProductDetail from './ProductDetail'
 import Product from './Product'
+import Footer from './Footer'
 
 export const UserContext = createContext()
 
@@ -21,8 +22,9 @@ const Boby = () => {
                     <Route exact path='/' element={<Home />} />
                     <Route exact path='/categories/:category/products/' element={<Product />} />
                     <Route exact path='/login' element={<Login />} />
-                    <Route exact path='/products/:productId' element={<ProductDetail />} />
+                    <Route exact path='/products/:product/' element={<ProductDetail />} />
                 </Routes>
+                <Footer />
             </UserContext.Provider>
         </BrowserRouter>
     )

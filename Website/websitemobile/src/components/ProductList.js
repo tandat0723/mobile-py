@@ -1,21 +1,14 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Card, Col } from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import '../static/Components.css'
 
 const ProductList = (props) => {
-    const nav = useNavigate()
-    const goProduct = () => {
-        if(props.isProduct === true)
-            nav(`/products/${props.id}`)
-        else
-            nav(`/categories/${props.id}/products`)
-
-    }
+    let path=`/products/${props.id}/`
 
     return (
         <Col className='product' md={3} xs={12}>
-            <Link to={goProduct} style={{textDecoration:"none"}}>
+            <Link to={path} style={{textDecoration:"none"}}>
                 <Card className='cards'>
                     <Card.Img className='img_items' variant="top" src={props.image}/>
                     <Card.Body className='title_items'>
@@ -28,4 +21,4 @@ const ProductList = (props) => {
     )
 }
 
-export default ProductList
+export default memo(ProductList)

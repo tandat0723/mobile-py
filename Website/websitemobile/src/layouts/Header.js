@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Button, Form, Nav, Navbar } from 'react-bootstrap'
+import { Button, Container, Form, Nav, Navbar } from 'react-bootstrap'
 import { Link, useNavigate} from 'react-router-dom'
 import Api, { endpoints } from '../configs/Api'
 import '../static/Home.css'
@@ -11,6 +11,7 @@ const Header = () => {
     const [q, setQ] = useState('')
     const nav = useNavigate()
     const [user, dispatch] = useContext(UserContext)
+
 
     useEffect(() => {
         const loadCategories = async() => {
@@ -42,6 +43,7 @@ const Header = () => {
 
     return (
         <>
+        <Container>
             <Navbar bg="light" expand="lg">
                 <Navbar.Brand href="/">Mobile Store</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -67,6 +69,7 @@ const Header = () => {
                     {path}
                 </div>
             </Navbar>
+        </Container>
         </>
     )
 }
