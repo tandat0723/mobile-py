@@ -1,16 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Container, Form, Nav, Navbar } from 'react-bootstrap'
+import { useSelector } from 'react-redux'
 import { Link, useNavigate} from 'react-router-dom'
 import Api, { endpoints } from '../configs/Api'
 import '../static/Home.css'
-import { UserContext } from './Boby'
+import cookies from 'react-cookies'
+import { useDispatch } from 'react-redux'
+import LogoutUser from '../ActionCreator/LogoutUser'
+
 
 
 const Header = () => {
     const [categories, setCategories] = useState([])
     const [q, setQ] = useState('')
     const nav = useNavigate()
-    const [user, dispatch] = useContext(UserContext)
+    const user = useSelector(state => state.user.user)
+    const dispatch = useDispatch()
 
 
     useEffect(() => {
@@ -27,24 +32,29 @@ const Header = () => {
         nav(`/?kw=${q}`)
     } 
 
-    const logout = (event) => {
-        event.preventDefault()
-        dispatch({'type': 'LOGOUT'})
+    const logout = () => {
+        cookies.remove('access_token')
+        cookies.remove('user')
+        dispatch(LogoutUser())
     }
 
-    let path = <Link className='nav-link' to='/login'>Đăng nhập</Link>
-    if (user != null) 
+    let path = 
+    <>
+        <Link className='nav-link login' to='/login'>Đăng nhập</Link>
+        <Link className='nav-link register' to='/register'>Đăng ký</Link>
+    </>
+    if (user !== null && user !== undefined)  
         path = 
         <>
-            <Link className='nav-link' to='/'>{user.username}</Link>
-            <a href='/' onClick={logout} className='nav-link'>Đăng xuất</a>
+            <Link className='nav-link login' to='/'>{user.username}</Link>
+            <Link className='nav-link register' onClick={logout}>Đăng xuất</Link>
         </>
     
 
     return (
         <>
         <Container>
-            <Navbar bg="light" expand="lg">
+            <Navbar className='navv' bg="light" expand="lg">
                 <Navbar.Brand href="/">Mobile Store</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-n av">

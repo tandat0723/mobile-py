@@ -1,19 +1,9 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from .models import Category, Product, Manufacturer, Os, Order, OrderDetail, CategoryProduct, Store, Province, \
-    District, Banner, Action, Rate, Comment, Tag
+    District, Banner, Action, Rate, Comment, Tag, Color, Price, ProductCode, Memory, Photo
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
-
-
-# from AppMobile.models import Product
-# from django.contrib.auth.models import Permission
-# from django.contrib.contenttypes.models import ContentType
-#
-#
-# content_type = ContentType.objects.get_for_model(Product)
-# per = Permission.objects.create(codename='can add tags to product', name='Can add tags to a product',
-#                                 content_type=content_type)
 
 
 class ProductForm(forms.ModelForm):
@@ -36,11 +26,6 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name']
     list_filter = ['name']
     search_fields = ['name']
-    readonly_fields = ['images']
-
-    def images(self, imgs):
-        if imgs:
-            return mark_safe('<img src="/static/{url}" width="200" />'.format(url=imgs.image.name))
 
 
 class BannerAdmin(admin.ModelAdmin):
@@ -105,7 +90,7 @@ class DistrictAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['content', 'creator', 'product', 'created_date']
+    list_display = ['comment', 'creator', 'product', 'created_date']
     list_filter = ['creator', 'product']
     search_fields = ['creator', 'product']
 
@@ -120,6 +105,35 @@ class ActionAdmin(admin.ModelAdmin):
     list_display = ['type', 'creator', 'product', 'created_date']
     list_filter = ['creator']
     search_fields = ['creator', 'product']
+
+
+class MemoryAdmin(admin.ModelAdmin):
+    list_display = ['name']
+    list_filter = ['name']
+    search_fields = ['name']
+
+
+class PriceAdmin(admin.ModelAdmin):
+    list_display = ['product', 'memory', 'name']
+    list_filter = ['product', 'memory']
+    search_fields = ['product', 'memory']
+
+
+class PhotoAdmin(admin.ModelAdmin):
+    list_display = ['name', 'product']
+    list_filter = ['product']
+    search_fields = ['product']
+    readonly_fields = ['images']
+
+    def images(self, img):
+        if img:
+            return mark_safe('<img src="/static/{url}" width="200" />'.format(url=img.image.name))
+
+
+class ProductCodeAdmin(admin.ModelAdmin):
+    list_display = ['product', 'color']
+    list_filter = ['product']
+    search_fields = ['product']
 
 
 admin.site.register(Category, CategoryAdmin)
@@ -137,3 +151,8 @@ admin.site.register(Action, ActionAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Rate, RateAdmin)
 admin.site.register(Tag)
+admin.site.register(Memory, MemoryAdmin)
+admin.site.register(Color)
+admin.site.register(ProductCode, ProductCodeAdmin)
+admin.site.register(Price, PriceAdmin)
+admin.site.register(Photo, PhotoAdmin)

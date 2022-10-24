@@ -2,13 +2,15 @@ from typing import Union
 from django.http import Http404
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.settings import settings
-from .models import Product, Category, CategoryProduct, User, Tag, Action, Rate, Comment, ProductView, Banner
+from .models import Product, Category, CategoryProduct, User, Tag, Action, Rate, Comment, ProductView, Banner, Memory, \
+    Color, Price
 from rest_framework.response import Response
 from .serializers import ProductSerializer, CategorySerializer, CategoryProductSerializer, UserSerializer, \
     ProductDetailSerializer, ActionSerializer, RateSerializer, CommentSerializer, ProductViewSerializer, \
-    BannerSerializer
+    BannerSerializer, MemorySerializer, ColorSerializer, PriceSerializer
 from drf_yasg.utils import swagger_auto_schema
 from .paginators import ProductPaginator
 from django.db.models import F
@@ -74,6 +76,13 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
     queryset = Product.objects.filter(active=True)
     serializer_class = ProductDetailSerializer
     pagination_class = ProductPaginator
+    parser_classes = [MultiPartParser, ]
+
+    def get_parsers(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return []
+
+        return super().get_parsers()
 
     def get_permissions(self):
         if self.action in ['add_comment', 'take_action', 'rate']:
@@ -115,14 +124,14 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=['post'], detail=True, url_path='add-comment')
+    @action(methods=['post'], detail=True, url_path='comment')
     def add_comment(self, request, pk):
         content = request.data.get('content')
         if content is not None:
             c = Comment.objects.create(content=content,
                                        creator=request.user,
                                        product=self.get_object())
-            return Response(CommentSerializer(c, context={'request': request}).data, status=status.HTTP_200_OK)
+            return Response(CommentSerializer(c).data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['post'], detail=True, url_path='like')
@@ -165,20 +174,21 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
+    parser_classes = [MultiPartParser, ]
 
     def get_permissions(self):
-        if self.action == 'get_current_user':
+        if self.action == 'current_user':
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 
     @action(methods=['get'], detail=False, url_path="current-user")
-    def get_current_user(self, request):
+    def current_user(self, request):
         return Response(self.serializer_class(request.user, context={'request': request}).data,
                         status=status.HTTP_200_OK)
 
 
 class OauthInfo(APIView):
-    def get_oauth2(self, request):
+    def get(self, request):
         return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK)
 
 
@@ -201,3 +211,18 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateA
 class BannerViewSet(viewsets.ViewSet, generics.ListCreateAPIView):
     queryset = Banner.objects.filter(active=True)
     serializer_class = BannerSerializer
+
+
+class MemoryViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = Memory.objects.filter(active=True)
+    serializer_class = MemorySerializer
+
+
+class ColorViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.ListAPIView):
+    queryset = Color.objects.filter()
+    serializer_class = ColorSerializer
+
+
+class PriceViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = Price.objects.filter(active=True)
+    serializer_class = PriceSerializer

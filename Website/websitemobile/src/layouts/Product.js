@@ -15,8 +15,7 @@ const Product = () => {
                 let res = await Api.get(endpoints['productcategories'](category))
                 setProductCategories(res.data)
             } 
-            catch(err)
-            {
+            catch(err) {
                 console.error(err)
             }
         }

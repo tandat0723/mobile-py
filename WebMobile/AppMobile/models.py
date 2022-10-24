@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from ckeditor.fields import RichTextField
@@ -9,7 +10,6 @@ class User(AbstractUser):
 
 class Category(models.Model):
     name = models.CharField(null=True, max_length=50, unique=True)
-    image = models.ImageField(blank=True, upload_to='categories/%Y/%m')
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -58,11 +58,12 @@ class Product(models.Model):
     category_product = models.ForeignKey(CategoryProduct, related_name='products', on_delete=models.CASCADE)
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     os = models.ForeignKey(Os, on_delete=models.CASCADE)
-    price = models.CharField(max_length=40)
     quantity = models.CharField(max_length=6)
     active = models.BooleanField(default=True)
     image = models.ImageField(blank=True, upload_to='products/%Y/%m')
     description = RichTextField()
+    content = RichTextField()
+    detail = RichTextField()
     tags = models.ManyToManyField('Tag', related_name='products', blank=True)
 
     def __str__(self):
@@ -80,24 +81,44 @@ class Tag(models.Model):
         return self.name
 
 
+class Memory(models.Model):
+    name = models.CharField(max_length=20)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Price(models.Model):
+    name = models.CharField(max_length=30)
+    memory = models.ForeignKey(Memory, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='products', on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Color(models.Model):
-    name = models.CharField(max_length=15)
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
+
+
+class Photo(models.Model):
+    name = models.CharField(max_length=30)
+    image = models.ImageField(blank=True, upload_to='photos/%Y/%m')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
 
 
 class ProductCode(models.Model):
-    product_id = models.ForeignKey(Product, null=True, on_delete=models.CASCADE)
-    color = models.ForeignKey(Color, null=True, on_delete=models.CASCADE)
-    price = models.CharField(max_length=14)
-    num_photo = models.CharField(max_length=2, blank=True)
-
-    class Meta:
-        unique_together = ('product_id', 'color')
-
-    def __str__(self):
-        return self.product_id
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+    photo = models.ForeignKey(Photo, on_delete=models.CASCADE)
 
 
 class Province(models.Model):
@@ -109,8 +130,7 @@ class Province(models.Model):
 
 class District(models.Model):
     name = models.CharField(max_length=50)
-    province = models.ForeignKey(Province, null=True, related_name='district', related_query_name='my_district',
-                                 on_delete=models.CASCADE)
+    province = models.ForeignKey(Province, null=True, related_name='district', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -118,7 +138,7 @@ class District(models.Model):
 
 class Store(models.Model):
     address = models.CharField(max_length=255, blank=True)
-    district = models.ForeignKey(District, null=True, on_delete=models.CASCADE)
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=True)
     phone = models.CharField(max_length=11)
     fax = models.CharField(max_length=255)
@@ -126,7 +146,7 @@ class Store(models.Model):
     image = models.ImageField(blank=True, upload_to='stores/%Y/%m')
     description = RichTextField()
     open_hour = models.CharField(max_length=200)
-    province = models.ForeignKey(Province, null=True, on_delete=models.CASCADE)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('name', 'district')
@@ -161,10 +181,8 @@ class Order(models.Model):
 
 
 class OrderDetail(models.Model):
-    order = models.ForeignKey(Order, related_name='order_detail', related_query_name='my_order_detail',
-                              on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, related_name='product_detail', related_query_name='my_product_detail',
-                                on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name='order_detail', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='product_detail', on_delete=models.CASCADE)
     quantity = models.CharField(max_length=2)
     price = models.CharField(max_length=14)
 
@@ -199,7 +217,7 @@ class Rate(ActionBase):
 
 
 class Comment(ActionBase):
-    content = models.TextField()
+    comment = models.TextField()
 
     def __str__(self):
         return self.content

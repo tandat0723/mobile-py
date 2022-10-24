@@ -32,6 +32,8 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = '%s/AppMobile/static/' % BASE_DIR
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,18 +49,22 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'debug_toolbar',
-    'oauth2_provider'
+    'oauth2_provider',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication'
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
     ]
 }
 
 OAUTH2_INFO = {
-    'client_id': 'ZqT27EvN1Ai7R1xirTpZptrEeSSPKCD6fhUBeOdo',
-    'client_secret': 'pbkdf2_sha256$390000$WWxq7xiIKRMNWQCPYecamR$KqJZWdryWgffReDYK0XbHjUUyMeBzsOwJFlpPB17nCM='
+    "client_id": "RaNV1oQXxaIYKeQd0FBCrqfmMWpk7gVDAiAilqfT",
+    "client_secret": "8EL7rzFgnZpztZIq9zSKHgDPZjx1g28QSdUhRTjGDiEjac11etW15IQy826LzzEWvLasgVllcgb7PoVyZky2Md6kFZ4EvupWWqDtQQx6fLFGVSmr9ggBZwP59Qn6bXKl"
 }
 
 OAUTH2_PROVIDER = {
@@ -74,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 INTERNAL_IPS = [
@@ -106,7 +113,7 @@ WSGI_APPLICATION = 'WebMobile.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mobiledb',
+        'NAME': 'appmobiledb',
         'USER': 'root',
         'PASSWORD': '12345678',
         'HOST': ''

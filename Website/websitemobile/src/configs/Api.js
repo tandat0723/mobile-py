@@ -1,25 +1,19 @@
 import axios from "axios"
-import cookies from "react-cookies"
 
-export let endpoints = {
+
+export const endpoints = {
     'categories': '/categories/',
     'banners':'/banners/',
     'categoryproducts':'/categoryproducts/',
     'products':'/products/',
     'productcategories':(category) => `/categories/${category}/products/`,
-    'productdetail': (product) => `/products/${product}/`,
+    'product-detail': (product) => `/products/${product}/`,
     'login':'/o/token/',
+    'register':'/users/',
     'current-user':'/users/current-user/',
     'oauth2-info':'/oauth2-info/',
-}
-
-export let oauthApis = () => {
-    return axios.create({
-        baseURL:'http://127.0.0.1:8000/',
-        headers: {
-            'Authorization': `Bearer ${cookies.load('access_token')}`
-        }
-    })
+    'memories': '/memories/',
+    'comments': (product) => `/products/${product}/comment/`
 }
 
 export default axios.create({

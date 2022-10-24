@@ -9,8 +9,11 @@ router.register('categoryproducts', views.CategoryProductViewSet, 'category prod
 router.register('users', views.UserViewSet, 'user')
 router.register('comments', views.CommentViewSet, 'comment')
 router.register('banners', views.BannerViewSet, 'banner')
+router.register('memories', views.MemoryViewSet, 'memory')
+router.register('colors', views.ColorViewSet, 'color')
+router.register('prices', views.PriceViewSet, 'price')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('oauth2-info', views.OauthInfo.as_view())
+    path('oauth2-info/', views.OauthInfo.as_view())
 ]

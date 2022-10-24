@@ -8,6 +8,10 @@
 
 /* HOME */
 
+.navv {
+    padding-left: 25px;
+}
+
 .part {
     font-size: 40px;
     text-align: center;
@@ -26,11 +30,10 @@
 
 
 .patern {
-    width: 100px;
-    text-align: center;
-    border-radius: 6px;
-    padding: 6px;
-    margin-left: 30px;
+    width: 190px;
+    position: relative;
+    display: flex;
+    padding-left: 20px;
 }
 
 .fa {
@@ -42,4 +45,116 @@
 }
 .right {
     min-width: 50%;
+}
+
+.login {
+    padding-right: 6px;
+    border-right: solid 0.5px gray;
+}
+
+.register {
+    padding-left: 6px;
+}
+
+
+/* PRODUCT DETAILS */
+
+.detail {
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+.body_de {
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+.body_detail {
+    margin-top: 100px;
+    margin-bottom: 100px;
+    background-color: blanchedalmond;
+    padding-right: 150px;
+    padding-left: 150px;
+    padding-top: 50px;
+    padding-bottom: 60px;
+    border-radius: 25px;
+}
+
+.tags {
+    margin: 3px;
+    background-color: red !important;
+    width: 50px;
+    height: 25px;
+    font-size: 15px;
+    padding: auto;
+    transition: width .4s linear .3s;
+}
+
+.tags:hover {
+    width: 57px;
+}
+
+.fb-comments {
+    margin: 0 50px;
+}
+
+/* LOGIN */
+
+.border-login {
+    border: 0.5px solid gray;
+    margin-top: 130px;
+    margin-bottom: 400px;
+    margin-left: 250px;
+    margin-right: 250px;
+    padding-bottom: 30px;
+    border-radius: 45px;
+}
+
+.form {
+    width: 45%;
+    position: relative;
+    margin: 30px;
+    left: 350px;
+    
+}
+
+.text-success {
+    margin-top: 50px;
+}
+
+.text-mb {
+    left: 20px;
+    position: relative;
+    left: -163px;
+}
+
+.label {
+    font-size: 20px;
+    padding-right: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.button-login {
+    position: relative;
+    left: -33px;
+}
+
+
+
+/* REGISTER */
+
+.border-register {
+    border: 0.5px solid gray;
+    margin-top: 70px;
+    margin-bottom: 400px;
+    margin-left: 250px;
+    margin-right: 250px;
+    padding-bottom: 30px;
+    border-radius: 45px;
+}
+
+.upload {
+    height: 25px;
+    font-size: 12px;
+    padding-top: 1.5px;
 }

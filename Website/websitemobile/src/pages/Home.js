@@ -48,7 +48,7 @@ const Home = () => {
             </div>
             <Row>
                 {products.map(p => {
-                    return <ProductList key={p.id} id={p.id} name={p.name} image={p.image} price={p.price} isProduct={true}/>
+                    return <ProductList key={p.id} id={p.id} name={p.name} image={p.image} price={p.price}/>
                 })}
             </Row>
         </>
