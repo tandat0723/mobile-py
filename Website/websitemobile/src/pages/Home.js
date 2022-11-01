@@ -5,6 +5,8 @@ import ProductList from '../components/ProductList'
 import Api, { endpoints } from '../configs/Api'
 import { BsApple } from 'react-icons/bs'
 import '../static/Home.css'
+import { MDBSpinner } from 'mdb-react-ui-kit'
+
 
 const Home = () => {
     const [products, setProducts] = useState([])
@@ -42,11 +44,16 @@ const Home = () => {
                     </Carousel.Item>
                 )}
             </Carousel>
+            {products.length === 0 &&   <div className='d-flex justify-content-center'>
+                                            <MDBSpinner role='status'>
+                                                <span className='visually-hidden'>Loading...</span> 
+                                            </MDBSpinner>
+                                        </div>}
             <div className='part'>
                 <BsApple className='logo' />
                 {/* <div className='title'>iPhone</div> */}
             </div>
-            <Row>
+            <Row className='list-product'>
                 {products.map(p => {
                     return <ProductList key={p.id} id={p.id} name={p.name} image={p.image} price={p.price}/>
                 })}

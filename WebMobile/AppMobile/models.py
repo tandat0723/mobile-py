@@ -1,4 +1,3 @@
-from datetime import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from ckeditor.fields import RichTextField
@@ -61,6 +60,7 @@ class Product(models.Model):
     quantity = models.CharField(max_length=6)
     active = models.BooleanField(default=True)
     image = models.ImageField(blank=True, upload_to='products/%Y/%m')
+    price = models.CharField(blank=True, default=0, max_length=20)
     description = RichTextField()
     content = RichTextField()
     detail = RichTextField()
@@ -99,72 +99,12 @@ class Price(models.Model):
         return self.name
 
 
-class Color(models.Model):
-    name = models.CharField(max_length=20)
-
-    def __str__(self):
-        return self.name
-
-
 class Photo(models.Model):
-    name = models.CharField(max_length=30)
     image = models.ImageField(blank=True, upload_to='photos/%Y/%m')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
-
-
-class ProductCode(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    color = models.ForeignKey(Color, on_delete=models.CASCADE)
-    photo = models.ForeignKey(Photo, on_delete=models.CASCADE)
-
-
-class Province(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class District(models.Model):
-    name = models.CharField(max_length=50)
-    province = models.ForeignKey(Province, null=True, related_name='district', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
-
-
-class Store(models.Model):
-    address = models.CharField(max_length=255, blank=True)
-    district = models.ForeignKey(District, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, null=True)
-    phone = models.CharField(max_length=11)
-    fax = models.CharField(max_length=255)
-    email = models.CharField(max_length=20)
-    image = models.ImageField(blank=True, upload_to='stores/%Y/%m')
-    description = RichTextField()
-    open_hour = models.CharField(max_length=200)
-    province = models.ForeignKey(Province, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('name', 'district')
-
-    def __str__(self):
-        return self.name
-
-
-class ProductStoreCode(models.Model):
-    product_code = models.ForeignKey(ProductCode, null=True, on_delete=models.CASCADE)
-    store = models.ForeignKey(Store, blank=True, on_delete=models.CASCADE)
-    province = models.ForeignKey(Province, blank=True, on_delete=models.CASCADE)
-    district = models.ForeignKey(District, blank=True, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, blank=True, on_delete=models.CASCADE)
-    quantity = models.CharField(max_length=7)
-
-    class Meta:
-        unique_together = ('product_code', 'store')
+        return self.product
 
 
 class Order(models.Model):
@@ -218,9 +158,10 @@ class Rate(ActionBase):
 
 class Comment(ActionBase):
     comment = models.TextField()
+    active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.content
+        return self.comment
 
 
 class ProductView(models.Model):

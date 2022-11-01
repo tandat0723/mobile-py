@@ -1,24 +1,11 @@
-import cookies from 'react-cookies'
-
-const init = {
-    "user": cookies.load('user')
-}
-
-const UserReducer = (state=init, action) => {
+const UserReducer = (user, action) => {
     switch (action.type) {
         case "LOGIN":
-            return {
-                ...state,
-                'user': action.payload
-            }
+            return action.payload
         case "LOGOUT":
-            return {
-                ...state,
-                'user': null
-            }
-        default:
-            return state
+            return null
     }
+    return user
 }
 
 export default UserReducer

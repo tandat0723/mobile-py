@@ -6,11 +6,12 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.settings import settings
 from .models import Product, Category, CategoryProduct, User, Tag, Action, Rate, Comment, ProductView, Banner, Memory, \
-    Color, Price
+    Price
 from rest_framework.response import Response
+from .permissons import CommentOwner
 from .serializers import ProductSerializer, CategorySerializer, CategoryProductSerializer, UserSerializer, \
     ProductDetailSerializer, ActionSerializer, RateSerializer, CommentSerializer, ProductViewSerializer, \
-    BannerSerializer, MemorySerializer, ColorSerializer, PriceSerializer
+    BannerSerializer, MemorySerializer, PriceSerializer, CreateCommentSerializer
 from drf_yasg.utils import swagger_auto_schema
 from .paginators import ProductPaginator
 from django.db.models import F
@@ -192,20 +193,25 @@ class OauthInfo(APIView):
         return Response(settings.OAUTH2_INFO, status=status.HTTP_200_OK)
 
 
-class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated()]
+class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView, generics.CreateAPIView):
+    queryset = Comment.objects.filter(active=True)
+    serializer_class = CreateCommentSerializer
 
-    def destroy(self, request, *args, **kwargs):
-        if request.user == self.get_object().creator:
-            return super().destroy(request, *args, **kwargs)
-        return Response(status=status.HTTP_403_FORBIDDEN)
+    def get_permissions(self):
+        if self.action in ['update', 'destroy']:
+            return [CommentOwner()]
 
-    def partial_update(self, request, *args, **kwargs):
-        if request.user == self.get_object().creator:
-            return super().partial_update(request, *args, **kwargs)
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        return [permissions.IsAuthenticated()]
+
+    # def destroy(self, request, *args, **kwargs):
+    #     if request.user == self.get_object().creator:
+    #         return super().destroy(request, *args, **kwargs)
+    #     return Response(status=status.HTTP_403_FORBIDDEN)
+    #
+    # def partial_update(self, request, *args, **kwargs):
+    #     if request.user == self.get_object().creator:
+    #         return super().partial_update(request, *args, **kwargs)
+    #     return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 class BannerViewSet(viewsets.ViewSet, generics.ListCreateAPIView):
@@ -216,11 +222,6 @@ class BannerViewSet(viewsets.ViewSet, generics.ListCreateAPIView):
 class MemoryViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Memory.objects.filter(active=True)
     serializer_class = MemorySerializer
-
-
-class ColorViewSet(viewsets.ViewSet, generics.ListCreateAPIView, generics.ListAPIView):
-    queryset = Color.objects.filter()
-    serializer_class = ColorSerializer
 
 
 class PriceViewSet(viewsets.ViewSet, generics.ListAPIView):

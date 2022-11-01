@@ -17,7 +17,7 @@
 .card {
     border-radius: 15px;
     height: 230px;
-    background-color: #323232;
+    /* background-color: #323232; */
 }
 
 .item {
@@ -56,7 +56,7 @@
 .cards {
     border-radius: 22px;
     height: 420px;
-    background-color: #323232;
+    /* background-color: #323232; */
 }
 
 .title_items{
@@ -67,7 +67,7 @@
 }
 
 .item_names {
-    color: #fff; 
+    color: black; 
     font-size: 15px; 
     padding-top: 10px;
 }
@@ -82,7 +82,7 @@
 }
 
 .item_prices {
-    color: #fff; 
+    color: black; 
     font-size: 22px; 
     font-weight: bold;
 }

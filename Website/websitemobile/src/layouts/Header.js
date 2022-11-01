@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Button, Container, Form, Nav, Navbar } from 'react-bootstrap'
-import { useSelector } from 'react-redux'
 import { Link, useNavigate} from 'react-router-dom'
 import Api, { endpoints } from '../configs/Api'
 import '../static/Home.css'
 import cookies from 'react-cookies'
-import { useDispatch } from 'react-redux'
-import LogoutUser from '../ActionCreator/LogoutUser'
+import { UserContext } from './Boby'
 
 
 
@@ -14,8 +12,7 @@ const Header = () => {
     const [categories, setCategories] = useState([])
     const [q, setQ] = useState('')
     const nav = useNavigate()
-    const user = useSelector(state => state.user.user)
-    const dispatch = useDispatch()
+    const [user, dispatch] = useContext(UserContext)
 
 
     useEffect(() => {
@@ -32,10 +29,12 @@ const Header = () => {
         nav(`/?kw=${q}`)
     } 
 
-    const logout = () => {
+    const logout = (event) => {
+        event.preventDefault()
         cookies.remove('access_token')
-        cookies.remove('user')
-        dispatch(LogoutUser())
+        cookies.remove('current_user')
+        dispatch({'type': 'LOGOUT'})
+        nav('/login')
     }
 
     let path = 

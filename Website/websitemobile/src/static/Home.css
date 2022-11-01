@@ -30,10 +30,11 @@
 
 
 .patern {
-    width: 190px;
+    width: 250px;
     position: relative;
     display: flex;
     padding-left: 20px;
+    
 }
 
 .fa {
@@ -50,10 +51,17 @@
 .login {
     padding-right: 6px;
     border-right: solid 0.5px gray;
+    color: black;
 }
 
 .register {
     padding-left: 6px;
+    color: black;
+    font-weight: bold;
+}
+
+.list-product {
+    margin-bottom: 50px;
 }
 
 
@@ -157,4 +165,19 @@
     height: 25px;
     font-size: 12px;
     padding-top: 1.5px;
+}
+
+/* FOOTER */
+
+.mt-5 {
+    padding-top: 20px;
+    color: black;
+}  
+
+.footer-content {
+    text-align: left;
+}
+
+.p-4 {
+    color: black;
 }

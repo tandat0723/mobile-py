@@ -1,3 +1,4 @@
+import { MDBSpinner } from "mdb-react-ui-kit"
 import React, { useEffect, useState } from "react"
 import { Carousel, Row } from "react-bootstrap"
 import { useParams } from "react-router"
@@ -7,7 +8,7 @@ import Api, { endpoints } from "../configs/Api"
 const Product = () => {
     const [productCategories, setProductCategories] = useState([])
     const [banners, setBanners] = useState([])
-    const {category} = useParams()
+    const { category } = useParams()
 
     useEffect(() => {
         let loadProductCategories = async() => {
@@ -31,6 +32,15 @@ const Product = () => {
 
         loadBanners()
     },[])
+    
+
+    if (productCategories === null)
+        return  
+            <div className='d-flex justify-content-center'>
+                <MDBSpinner role='status'>
+                    <span className='visually-hidden'>Loading...</span> 
+                </MDBSpinner>
+            </div>
 
 
     return (

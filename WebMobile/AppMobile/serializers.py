@@ -1,7 +1,7 @@
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 from .models import Product, Category, Os, Manufacturer, Order, OrderDetail, CategoryProduct, User, Tag, \
-    Comment, Rate, Action, ProductView, Banner, Memory, Price, Color, Photo, ProductCode
+    Comment, Rate, Action, ProductView, Banner, Memory, Price, Photo
 
 
 class CategorySerializer(ModelSerializer):
@@ -38,10 +38,10 @@ class TagSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class CommentSerializer(ModelSerializer):
+class CreateCommentSerializer(ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['id', 'comment', 'updated_date', 'created_date']
+        fields = ['comment', 'product', 'creator']
 
 
 class RateSerializer(ModelSerializer):
@@ -55,7 +55,7 @@ class ProductSerializer(ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category', 'image', 'quantity']
+        fields = ['id', 'name', 'category', 'price', 'image', 'quantity']
 
     def get_image(self, obj):
         request = self.context['request']
@@ -75,14 +75,26 @@ class ProductDetailSerializer(ProductSerializer):
 
 
 class UserSerializer(ModelSerializer):
+    avatar = SerializerMethodField(source='avatar')
+
     class Meta:
         model = User
         fields = ['id', 'first_name', 'last_name', 'username', 'avatar', 'password', 'email', 'date_joined']
         extra_kwargs = {
             'password': {
-                'write_only': 'true'
+                'write_only': True
+            }, 'avatar': {
+                'read_only': True,
+                'write_only': True
             }
         }
+
+    def get_avatar(self, avt):
+        request = self.context['request']
+        if avt.avatar and not avt.avatar.name.startswith('/static'):
+            path = '/static/%s' % avt.avatar.name
+
+            return request.build_absolute_uri(path)
 
     def create(self, validated_data):
         user = User(**validated_data)
@@ -90,6 +102,14 @@ class UserSerializer(ModelSerializer):
         user.save()
 
         return user
+
+
+class CommentSerializer(CreateCommentSerializer):
+    creator = UserSerializer()
+
+    class Meta:
+        model: Comment
+        fields = ['id', 'comment', 'created_date', 'updated_date', 'creator']
 
 
 class ActionSerializer(ModelSerializer):
@@ -116,12 +136,6 @@ class PriceSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class ColorSerializer(ModelSerializer):
-    class Meta:
-        model = Color
-        fields = ['id', 'name']
-
-
 class PhotoSerializer(ModelSerializer):
     image = SerializerMethodField()
 
@@ -136,12 +150,3 @@ class PhotoSerializer(ModelSerializer):
             path = '/static/%s' % obj.image.name
 
             return request.build_absolute_uri(path)
-
-
-class ProductCodeSerializer(ModelSerializer):
-    class Meta:
-        model = ProductCode
-        fields = '__all__'
-
-
-

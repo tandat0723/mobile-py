@@ -1,18 +1,17 @@
 import cookies from 'react-cookies'
-import React, { useState } from 'react'
-import { Button, Form } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { Alert, Button, Form } from 'react-bootstrap'
+import { Navigate } from 'react-router-dom'
 import Api, { endpoints } from '../configs/Api'
 import '../static/Home.css'
-import { useDispatch } from 'react-redux'
-import UserCreator from '../ActionCreator/UserCreator'
+import { UserContext } from '../layouts/Boby'
 
 
 const Login = () => {
-    const [username, setUsername] = useState()
-    const [password, setPassword] = useState()
-    const dispatch = useDispatch()
-    const nav = useNavigate()
+    const [username, setUsername] = useState([])
+    const [password, setPassword] = useState([])
+    const [user, dispatch] = useContext(UserContext)
+    const [erMsg, setErMsg] = useState(null)
 
     const login = async (event) => {
         event.preventDefault()
@@ -27,29 +26,35 @@ const Login = () => {
                 'grant_type': 'password'
             })
 
-            cookies.save('access_token', res.data.access_token)
+            if (res.status === 200) {
+                cookies.save('access_token', res.data.access_token)
 
-            const user = await Api.get(endpoints['current-user'], {
-                headers: {
-                    'Authorization': `Bearer ${cookies.load('access_token')}`
-                }
-            })
-            console.info(user)
+                const user = await Api.get(endpoints['current-user'], {
+                    headers: {
+                        'Authorization': `Bearer ${cookies.load('access_token')}`
+                    }
+                })
 
-            cookies.save('user', user.data)
-            dispatch(UserCreator(user.data))
-            nav("/")
-        } 
-        catch (error){
+                cookies.save('current_user', user.data)
+                dispatch({
+                    'type': "LOGIN",
+                    'payload': user.data
+                })
+            } 
+        } catch (error){
             console.error(error)
+            setErMsg('Tài khoản hoặc mật khẩu không đúng!!!')
         }
+        
     }
 
-    
+    if (user != null)
+        return <Navigate to="/" />
   
     return (
         <div className='border-register'>
             <h2 className='text-center text-success'>ĐĂNG NHẬP</h2>
+            
             <Form className='form' onSubmit={login}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Control className='text-mb' type="text" placeholder="Nhập tên tài khoản..." onChange={(event) => setUsername(event.target.value)} value={username} />
@@ -61,6 +66,7 @@ const Login = () => {
                     Đăng nhập
                 </Button>
             </Form>
+            {erMsg !== null && <Alert className='text-center'  key='danger' variant='danger' > {erMsg} </Alert>}
         </div>
     )
 }

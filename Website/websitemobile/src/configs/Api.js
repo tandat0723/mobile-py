@@ -13,7 +13,10 @@ export const endpoints = {
     'current-user':'/users/current-user/',
     'oauth2-info':'/oauth2-info/',
     'memories': '/memories/',
-    'comments': (product) => `/products/${product}/comment/`
+    'product-comments': (product) => `/products/${product}/comment/`,
+    'comments': '/comments/',
+    'like-product': (product) => `/products/${product}/like/`,
+    'rate-product': (product) => `/products/${product}/rating/`,
 }
 
 export default axios.create({

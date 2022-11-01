@@ -27,14 +27,14 @@ const Register = () => {
             formData.append('avatar', avatar.current.files[0])
 
             try {
-                await Api.post(endpoints['register'], formData, {
+                let res = await Api.post(endpoints['register'], formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }})
-                
-                nav('/login')
-            } 
-            catch(err){
+                if(res.status === 201)
+                    nav('/login')
+                    
+            } catch(err){
                 console.error(err)
             }
             
