@@ -34,14 +34,6 @@ const Product = () => {
     },[])
     
 
-    if (productCategories === null)
-        return  
-            <div className='d-flex justify-content-center'>
-                <MDBSpinner role='status'>
-                    <span className='visually-hidden'>Loading...</span> 
-                </MDBSpinner>
-            </div>
-
 
     return (
         <>
@@ -52,6 +44,11 @@ const Product = () => {
                     </Carousel.Item>
                 )}
             </Carousel>
+            {productCategories.length === 0 &&   <div className='d-flex justify-content-center'>
+                                            <MDBSpinner role='status'>
+                                                <span className='visually-hidden'>Loading...</span> 
+                                            </MDBSpinner>
+                                        </div>}
             <Row>
                 {productCategories.map(p => {
                     return <ProductList id={p.id} key={p.id} name={p.name} image={p.image} price={p.price} />

@@ -3,4 +3,9 @@ from rest_framework import permissions
 
 class CommentOwner(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, comment):
-        return request.creator == comment.creator
+        """
+        Return `True` if permission is granted, `False` otherwise.
+        """
+
+        return request.user == comment.user
+    

@@ -1,7 +1,7 @@
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
-from .models import Product, Category, Os, Manufacturer, Order, OrderDetail, CategoryProduct, User, Tag, \
-    Comment, Rate, Action, ProductView, Banner, Memory, Price, Photo
+from .models import Product, Category, Os, Manufacturer, CategoryProduct, User, Tag, \
+    Comment, ProductView, Banner, Memory, Price, Photo
 
 
 class CategorySerializer(ModelSerializer):
@@ -35,27 +35,16 @@ class BannerSerializer(ModelSerializer):
 class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
-
-
-class CreateCommentSerializer(ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ['comment', 'product', 'creator']
-
-
-class RateSerializer(ModelSerializer):
-    class Meta:
-        model = Rate
-        fields = ['id', 'rate', 'created_date']
+        fields = ['id', 'name']
 
 
 class ProductSerializer(ModelSerializer):
     image = SerializerMethodField()
+    tags = TagSerializer(many=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category', 'price', 'image', 'quantity']
+        fields = ['id', 'name', 'category', 'price', 'image', 'quantity', 'tags']
 
     def get_image(self, obj):
         request = self.context['request']
@@ -67,11 +56,30 @@ class ProductSerializer(ModelSerializer):
 
 
 class ProductDetailSerializer(ProductSerializer):
-    tags = TagSerializer(many=True)
+    class Meta:
+        model = Product
+        fields = ProductSerializer.Meta.fields + ['description', 'content', 'detail']
+
+
+class PermissionProductDetailSerializer(ProductDetailSerializer):
+    like = SerializerMethodField()
+    rating = SerializerMethodField()
+
+    def get_like(self, product):
+        request = self.context.get('request')
+        if request:
+            return product.like_set.filter(user=request.user, active=True).exists()
+
+    def get_rating(self, product):
+        request = self.context.get('request')
+        if request:
+            r = product.rating_set.filter(user=request.user).first()
+            if r:
+                return r.rate
 
     class Meta:
-        model = ProductSerializer.Meta.model
-        fields = ProductSerializer.Meta.fields + ['description', 'content', 'detail', 'tags']
+        model = Product
+        fields = ProductDetailSerializer.Meta.fields + ['like', 'rating']
 
 
 class UserSerializer(ModelSerializer):
@@ -104,18 +112,18 @@ class UserSerializer(ModelSerializer):
         return user
 
 
+class CreateCommentSerializer(ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['content_comment', 'product', 'user', 'created_date', 'updated_date']
+
+
 class CommentSerializer(CreateCommentSerializer):
-    creator = UserSerializer()
+    user = UserSerializer()
 
     class Meta:
-        model: Comment
-        fields = ['id', 'comment', 'created_date', 'updated_date', 'creator']
-
-
-class ActionSerializer(ModelSerializer):
-    class Meta:
-        model = Action
-        fields = ['id', 'type', 'created_date']
+        model = Comment
+        exclude = ['active']
 
 
 class ProductViewSerializer(ModelSerializer):

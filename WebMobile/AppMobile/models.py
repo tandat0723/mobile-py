@@ -74,13 +74,6 @@ class Product(models.Model):
         unique_together = ('name', 'category')
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Memory(models.Model):
     name = models.CharField(max_length=20)
     active = models.BooleanField(default=True)
@@ -107,65 +100,72 @@ class Photo(models.Model):
         return self.product
 
 
-class Order(models.Model):
-    username = models.CharField(max_length=50)
-    phone = models.CharField(max_length=11)
-    address = models.CharField(max_length=255)
-    date = models.DateTimeField(auto_now=True)
-    total = models.CharField(max_length=14)
-    approve = models.BooleanField(default=False)
-    delivery_status = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.username
-
-
-class OrderDetail(models.Model):
-    order = models.ForeignKey(Order, related_name='order_detail', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, related_name='product_detail', on_delete=models.CASCADE)
-    quantity = models.CharField(max_length=2)
-    price = models.CharField(max_length=14)
-
-    class Meta:
-        unique_together = ('order', 'product')
-
-    def __str__(self):
-        return self.order
+# class Order(models.Model):
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     total = models.CharField(max_length=20)
+#     count = models.IntegerField(default=0)
+#
+#
+# class OrderDetail(models.Model):
+#     order = models.ForeignKey(Order, related_name='order_detail', on_delete=models.CASCADE)
+#     product = models.ForeignKey(Product, related_name='product_detail', on_delete=models.CASCADE)
+#     quantity = models.CharField(max_length=2)
+#     total = models.CharField(max_length=14)
+#
+#     class Meta:
+#         unique_together = ('order', 'product')
+#
+#     def __str__(self):
+#         return self.order
 
 
 class ActionBase(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
+        unique_together = ('user', 'product')
         abstract = True
 
 
-class Action(ActionBase):
-    LIKE, UNLIKE = range(2)
-    ACTIONS = [
-        (LIKE, 'like'),
-        (UNLIKE, 'unlike')
-    ]
-    type = models.PositiveSmallIntegerField(choices=ACTIONS, default=LIKE)
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    active = models.BooleanField(default=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Like(ActionBase):
+    active = models.BooleanField(default=False)
 
 
 class Rate(ActionBase):
-    rate = models.PositiveSmallIntegerField(default=0)
+    rate = models.SmallIntegerField(default=0)
 
 
-class Comment(ActionBase):
-    comment = models.TextField()
+class Comment(models.Model):
+    content_comment = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    product = models.ForeignKey(Product, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.comment
+        return self.content_comment
 
 
 class ProductView(models.Model):
-    created_date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     updated_date = models.DateTimeField(auto_now=True)
     views = models.IntegerField(default=0)
     product = models.OneToOneField(Product, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'product')
+

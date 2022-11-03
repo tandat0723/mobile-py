@@ -4,6 +4,7 @@ const UserReducer = (user, action) => {
             return action.payload
         case "LOGOUT":
             return null
+            default:
     }
     return user
 }

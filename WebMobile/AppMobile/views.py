@@ -5,19 +5,18 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.settings import settings
-from .models import Product, Category, CategoryProduct, User, Tag, Action, Rate, Comment, ProductView, Banner, Memory, \
+from .models import Product, Category, CategoryProduct, User, Tag, Like, Rate, Comment, ProductView, Banner, Memory, \
     Price
 from rest_framework.response import Response
 from .permissons import CommentOwner
 from .serializers import ProductSerializer, CategorySerializer, CategoryProductSerializer, UserSerializer, \
-    ProductDetailSerializer, ActionSerializer, RateSerializer, CommentSerializer, ProductViewSerializer, \
-    BannerSerializer, MemorySerializer, PriceSerializer, CreateCommentSerializer
+    ProductDetailSerializer, CommentSerializer, ProductViewSerializer, \
+    BannerSerializer, MemorySerializer, PriceSerializer, CreateCommentSerializer, PermissionProductDetailSerializer
 from drf_yasg.utils import swagger_auto_schema
 from .paginators import ProductPaginator
-from django.db.models import F
 
 
-class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
+class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Category.objects.filter(active=True)
     serializer_class = CategorySerializer
 
@@ -79,6 +78,12 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
     pagination_class = ProductPaginator
     parser_classes = [MultiPartParser, ]
 
+    def get_serializer_class(self):
+        if self.request.user.is_authenticated:
+            return PermissionProductDetailSerializer
+
+        return ProductDetailSerializer
+
     def get_parsers(self):
         if getattr(self, 'swagger_fake_view', False):
             return []
@@ -86,8 +91,9 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
         return super().get_parsers()
 
     def get_permissions(self):
-        if self.action in ['add_comment', 'take_action', 'rate']:
+        if self.action in ['take_action', 'rating']:
             return [permissions.IsAuthenticated()]
+
         return [permissions.AllowAny()]
 
     def get_queryset(self):
@@ -106,6 +112,12 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
 
         return queryset
 
+    @swagger_auto_schema(
+        operation_description='Get comment for a product',
+        responses={
+            status.HTTP_200_OK: CommentSerializer()
+        }
+    )
     @action(methods=['post'], detail=True, url_path="tags")
     def add_tag(self, request, pk):
 
@@ -125,51 +137,43 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=['post'], detail=True, url_path='comment')
-    def add_comment(self, request, pk):
-        content = request.data.get('content')
-        if content is not None:
-            c = Comment.objects.create(content=content,
-                                       creator=request.user,
-                                       product=self.get_object())
-            return Response(CommentSerializer(c).data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    @action(methods=['get'], detail=True, url_path='comments')
+    def get_comment(self, request, pk):
+        product = self.get_object()
+        comments = product.comments.select_related('user').filter(active=True)
+
+        return Response(CommentSerializer(comments, many=True, context={'request': request}).data,
+                        status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='like')
-    def take_action(self, request, pk):
-        try:
-            action_type = int(request.data['type'])
-        except Union[IndexError, ValueError]:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            actions = Action.objects.create(type=action_type,
-                                            creator=request.user,
-                                            product=self.get_object())
+    def like(self, request, pk):
+        product = self.get_object()
+        user = request.user
 
-        return Response(ActionSerializer(actions, context={'request': request}).data, status=status.HTTP_200_OK)
+        l, _ = Like.objects.get_or_create(product=product, user=user)
+        l.active = not l.active
+        try:
+            l.save()
+        except:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data=PermissionProductDetailSerializer(product, context={'request': request}).data,
+                        status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='rating')
-    def rate(self, request, pk):
+    def rating(self, request, pk):
+        product = self.get_object()
+        user = request.user
+
+        r,_ = Rate.objects.get_or_create(product=product,user=user)
+        r.rate = request.data.get('rate', 0)
         try:
-            rate = int(request.data['rate'])
-        except Union[IndexError, ValueError]:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            r = Rate.objects.create(rate=rate,
-                                    creator=request.user,
-                                    product=self.get_object())
-            if rate > 5:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(RateSerializer(r, context={'request': request}).data, status=status.HTTP_200_OK)
+            r.save()
+        except:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(methods=['get'], detail=True, url_path='views')
-    def inc_view(self, request, pk):
-        view, created = ProductView.objects.get_or_create(product=self.get_object())
-        view.views = F('views') + 1
-        view.save()
-        view.refresh_from_d()
-
-        return Response(ProductViewSerializer(view, context={'request': request}).data, status=status.HTTP_200_OK)
+        return Response(data=PermissionProductDetailSerializer(product, context={'request': request}).data,
+                        status=status.HTTP_200_OK)
 
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
@@ -196,6 +200,7 @@ class OauthInfo(APIView):
 class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView, generics.CreateAPIView):
     queryset = Comment.objects.filter(active=True)
     serializer_class = CreateCommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
         if self.action in ['update', 'destroy']:
@@ -203,15 +208,16 @@ class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateA
 
         return [permissions.IsAuthenticated()]
 
-    # def destroy(self, request, *args, **kwargs):
-    #     if request.user == self.get_object().creator:
-    #         return super().destroy(request, *args, **kwargs)
-    #     return Response(status=status.HTTP_403_FORBIDDEN)
-    #
-    # def partial_update(self, request, *args, **kwargs):
-    #     if request.user == self.get_object().creator:
-    #         return super().partial_update(request, *args, **kwargs)
-    #     return Response(status=status.HTTP_403_FORBIDDEN)
+
+class MyProductView(generics.ListCreateAPIView):
+    lookup_field = ['name']
+    queryset = CategoryProduct.objects.filter(active=True)
+    serializer_class = CategoryProductSerializer
+
+
+class MyProductDetailView(generics.RetrieveAPIView):
+    queryset = CategoryProduct.objects.filter(active=True)
+    serializer_class = CategoryProductSerializer
 
 
 class BannerViewSet(viewsets.ViewSet, generics.ListCreateAPIView):

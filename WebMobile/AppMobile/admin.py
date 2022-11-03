@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from .models import Category, Product, Manufacturer, Os, Order, OrderDetail, CategoryProduct, Banner, Action, Rate, \
-                    Comment, Tag, Price, Memory, Photo
+from .models import Category, Product, Manufacturer, Os, CategoryProduct, Banner, Like, Rate, \
+                    Comment, Tag, Price, Memory, Photo, User
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 
@@ -60,21 +60,15 @@ class CategoryProductAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ['comment', 'creator', 'product', 'created_date']
-    list_filter = ['creator', 'product']
-    search_fields = ['creator', 'product']
+    list_display = ['content_comment', 'user', 'product', 'created_date']
+    list_filter = ['user', 'product']
+    search_fields = ['user', 'product']
 
 
 class RateAdmin(admin.ModelAdmin):
-    list_display = ['rate', 'creator', 'product', 'created_date']
-    list_filter = ['creator', 'product']
-    search_fields = ['creator', 'product']
-
-
-class ActionAdmin(admin.ModelAdmin):
-    list_display = ['type', 'creator', 'product', 'created_date']
-    list_filter = ['creator']
-    search_fields = ['creator', 'product']
+    list_display = ['rate', 'user', 'product', 'created_date']
+    list_filter = ['user', 'product']
+    search_fields = ['user', 'product']
 
 
 class MemoryAdmin(admin.ModelAdmin):
@@ -100,15 +94,14 @@ class PhotoAdmin(admin.ModelAdmin):
             return mark_safe('<img src="/static/{url}" width="200" />'.format(url=img.image.name))
 
 
+admin.site.register(User)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Manufacturer, ManufacturerAdmin)
 admin.site.register(Os, OsAdmin)
-admin.site.register(Order)
 admin.site.register(CategoryProduct, CategoryProductAdmin)
-admin.site.register(OrderDetail)
 admin.site.register(Banner, BannerAdmin)
-admin.site.register(Action, ActionAdmin)
+admin.site.register(Like)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Rate, RateAdmin)
 admin.site.register(Tag)
