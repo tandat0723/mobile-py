@@ -94,7 +94,15 @@ class PhotoAdmin(admin.ModelAdmin):
             return mark_safe('<img src="/static/{url}" width="200" />'.format(url=img.image.name))
 
 
-admin.site.register(User)
+class UserAdmin(admin.ModelAdmin):
+    readonly_fields = ['avatars']
+
+    def avatars(self, img):
+        if img:
+            return mark_safe('<img src="/static/{url}" width="200" />'.format(url=img.avatar.name))
+
+
+admin.site.register(User, UserAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Manufacturer, ManufacturerAdmin)

@@ -65,6 +65,7 @@ class Product(models.Model):
     content = RichTextField()
     detail = RichTextField()
     tags = models.ManyToManyField('Tag', related_name='products', blank=True)
+    memory = models.ManyToManyField('Memory', blank=True)
 
     def __str__(self):
         return self.name

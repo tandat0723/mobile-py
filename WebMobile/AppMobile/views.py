@@ -5,15 +5,20 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.settings import settings
-from .models import Product, Category, CategoryProduct, User, Tag, Like, Rate, Comment, ProductView, Banner, Memory, \
+from .models import Product, Category, CategoryProduct, User, Tag, Like, Rate, Comment, Banner, \
     Price
 from rest_framework.response import Response
 from .permissons import CommentOwner
 from .serializers import ProductSerializer, CategorySerializer, CategoryProductSerializer, UserSerializer, \
-    ProductDetailSerializer, CommentSerializer, ProductViewSerializer, \
-    BannerSerializer, MemorySerializer, PriceSerializer, CreateCommentSerializer, PermissionProductDetailSerializer
+    ProductDetailSerializer, CommentSerializer, \
+    BannerSerializer, PriceSerializer, CreateCommentSerializer
 from drf_yasg.utils import swagger_auto_schema
 from .paginators import ProductPaginator
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+
+
+class SampleView(APIView):
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
 
 
 class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -76,22 +81,16 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
     queryset = Product.objects.filter(active=True)
     serializer_class = ProductDetailSerializer
     pagination_class = ProductPaginator
-    parser_classes = [MultiPartParser, ]
-
-    def get_serializer_class(self):
-        if self.request.user.is_authenticated:
-            return PermissionProductDetailSerializer
-
-        return ProductDetailSerializer
-
-    def get_parsers(self):
-        if getattr(self, 'swagger_fake_view', False):
-            return []
-
-        return super().get_parsers()
+    # parser_classes = (MultiPartParser, )
+    #
+    # def get_parsers(self):
+    #     if getattr(self, 'swagger_fake_view', False):
+    #         return []
+    #
+    #     return super().get_parsers()
 
     def get_permissions(self):
-        if self.action in ['take_action', 'rating']:
+        if self.action in ['like', 'rating']:
             return [permissions.IsAuthenticated()]
 
         return [permissions.AllowAny()]
@@ -112,38 +111,12 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
 
         return queryset
 
-    @swagger_auto_schema(
-        operation_description='Get comment for a product',
-        responses={
-            status.HTTP_200_OK: CommentSerializer()
-        }
-    )
-    @action(methods=['post'], detail=True, url_path="tags")
-    def add_tag(self, request, pk):
-
-        try:
-            products = self.get_object()
-        except Http404:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
-            tags = request.data.get('tags')
-            if tags is not None:
-                for tag in tags:
-                    t, _ = Tag.objects.get_or_create(name=tag)
-                    products.tags.add(t)
-                products.save()
-                return Response(self.serializer_class(products, context={'request': request}).data,
-                                status=status.HTTP_201_CREATED)
-
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
     @action(methods=['get'], detail=True, url_path='comments')
-    def get_comment(self, request, pk):
+    def get_comments(self, request, pk):
         product = self.get_object()
-        comments = product.comments.select_related('user').filter(active=True)
+        comments = product.comments.select_related('user')
 
-        return Response(CommentSerializer(comments, many=True, context={'request': request}).data,
-                        status=status.HTTP_200_OK)
+        return Response(CommentSerializer(comments, many=True).data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=True, url_path='like')
     def like(self, request, pk):
@@ -152,34 +125,28 @@ class ProductViewSet(viewsets.ViewSet, generics.RetrieveAPIView, generics.ListAP
 
         l, _ = Like.objects.get_or_create(product=product, user=user)
         l.active = not l.active
-        try:
-            l.save()
-        except:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        l.save()
 
-        return Response(data=PermissionProductDetailSerializer(product, context={'request': request}).data,
-                        status=status.HTTP_200_OK)
+        return Response(ProductDetailSerializer(l, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
     @action(methods=['post'], detail=True, url_path='rating')
     def rating(self, request, pk):
+        if 'rate' not in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         product = self.get_object()
         user = request.user
 
-        r,_ = Rate.objects.get_or_create(product=product,user=user)
+        r, _ = Rate.objects.get_or_create(product=product, user=user)
         r.rate = request.data.get('rate', 0)
-        try:
-            r.save()
-        except:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        r.save()
 
-        return Response(data=PermissionProductDetailSerializer(product, context={'request': request}).data,
-                        status=status.HTTP_200_OK)
+        return Response(ProductDetailSerializer(r, context={'request': request}).data, status=status.HTTP_201_CREATED)
 
 
 class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
-    parser_classes = [MultiPartParser, ]
 
     def get_permissions(self):
         if self.action == 'current_user':
@@ -200,7 +167,6 @@ class OauthInfo(APIView):
 class CommentViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView, generics.CreateAPIView):
     queryset = Comment.objects.filter(active=True)
     serializer_class = CreateCommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
         if self.action in ['update', 'destroy']:
@@ -223,11 +189,6 @@ class MyProductDetailView(generics.RetrieveAPIView):
 class BannerViewSet(viewsets.ViewSet, generics.ListCreateAPIView):
     queryset = Banner.objects.filter(active=True)
     serializer_class = BannerSerializer
-
-
-class MemoryViewSet(viewsets.ViewSet, generics.ListAPIView):
-    queryset = Memory.objects.filter(active=True)
-    serializer_class = MemorySerializer
 
 
 class PriceViewSet(viewsets.ViewSet, generics.ListAPIView):

@@ -9,7 +9,6 @@ router.register('categoryproducts', views.CategoryProductViewSet, 'category prod
 router.register('users', views.UserViewSet, 'user')
 router.register('comments', views.CommentViewSet, 'comment')
 router.register('banners', views.BannerViewSet, 'banner')
-router.register('memories', views.MemoryViewSet, 'memory')
 router.register('prices', views.PriceViewSet, 'price')
 
 urlpatterns = [
